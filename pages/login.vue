@@ -5,26 +5,34 @@
 				<h2 class="text-3xl">Log in</h2>
 				<p class="text-sm">Enter your credentials to access your account</p>
 			</div>
-			<form action="" class="space-y-4">
+			<form @submit.prevent="onSubmit" class="space-y-4">
 				<div class="form-control w-full">
 					<label class="label">
 						<span class="label-text">Email</span>
 					</label>
 					<input
+						v-model="inputData.email"
 						type="text"
 						placeholder="user@example.com"
 						class="input input-bordered w-full block"
 					/>
+					<p v-show="errorsData.email" class="text-warning text-sm capitalize mt-1 pl-2">
+						{{ errorsData.email }}
+					</p>
 				</div>
 				<div class="form-control w-full relative">
 					<label class="label">
 						<span class="label-text">Password</span>
 					</label>
 					<input
+						v-model="inputData.password"
 						:type="showPass ? 'text' : 'password'"
 						placeholder="********"
 						class="input input-bordered w-full block"
 					/>
+					<p class="text-warning text-sm capitalize mt-1 pl-2" v-show="errorsData.password">
+						{{ errorsData.password }}
+					</p>
 					<button
 						type="button"
 						@click="showPass = !showPass"
@@ -55,9 +63,9 @@
 					</button>
 				</div>
 				<p>
-					<NuxtLink class="text-sm font-bold underline" to="/forget-password"
-						>Forget Password</NuxtLink
-					>
+					<NuxtLink class="text-sm font-bold underline" to="/forget-password">
+						Forget Password
+					</NuxtLink>
 				</p>
 				<button type="submit" class="btn btn-primary btn-block">Login</button>
 				<p>
@@ -69,6 +77,38 @@
 	</NuxtLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+	import { validateEmail, validatePassword } from "~/helpers/validate";
+
 	const showPass = useState("showpass", () => false);
+
+	const inputData = ref({ email: "", password: "" });
+	const errorsData = ref({ email: "", password: "" });
+
+	const hasError = computed(() => {
+		return Object.values(errorsData.value).some(val => val !== "");
+	});
+
+	function onSubmit() {
+		const { email, password } = inputData.value;
+		errorsData.value.email = validatePassword(email);
+		errorsData.value.password = validatePassword(password);
+		if (!hasError.value) {
+			console.log("form submited");
+		}
+	}
+
+	watch(
+		() => inputData.value.email,
+		email => {
+			errorsData.value.email = validateEmail(email);
+		}
+	);
+
+	watch(
+		() => inputData.value.password,
+		password => {
+			errorsData.value.password = validatePassword(password);
+		}
+	);
 </script>
