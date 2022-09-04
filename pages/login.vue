@@ -1,6 +1,6 @@
 <template>
 	<NuxtLayout name="with-header">
-		<section class="max-w-md mx-auto bg-base-300 rounded-md p-6 mt-10">
+		<section class="max-w-md mx-auto bg-base-300 rounded-md p-6 mt-10 mb-10">
 			<div class="space-y-4 mb-3">
 				<h2 class="text-3xl">Log in</h2>
 				<p class="text-sm">Enter your credentials to access your account</p>
@@ -54,7 +54,16 @@
 						</svg>
 					</button>
 				</div>
+				<p>
+					<NuxtLink class="text-sm font-bold underline" to="/forget-password"
+						>Forget Password</NuxtLink
+					>
+				</p>
 				<button type="submit" class="btn btn-primary btn-block">Login</button>
+				<p>
+					Don't have an account ?
+					<NuxtLink to="/register" class="underline text-info">Create Account</NuxtLink>
+				</p>
 			</form>
 		</section>
 	</NuxtLayout>
