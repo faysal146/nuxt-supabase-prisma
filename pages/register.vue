@@ -77,7 +77,13 @@
 						</svg>
 					</button>
 				</div>
-				<button type="submit" class="btn btn-primary btn-block">Create Account</button>
+				<button
+					type="submit"
+					:disabled="loading"
+					:class="`btn btn-primary btn-block ${loading && 'loading'}`"
+				>
+					Create Account
+				</button>
 				<p>
 					Already have an account ?
 					<NuxtLink to="/login" class="underline text-info"> Login Now </NuxtLink>
@@ -87,9 +93,14 @@
 	</NuxtLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+	import { SupabaseClient } from "@supabase/supabase-js";
 	import { validateEmail, validateName, validatePassword } from "~/helpers/validate";
-	const showPass = useState("showpass", () => false);
+	import { useStore } from "~~/store/user.store";
+	import { useToast } from "~/composables/useToast";
+
+	const showPass = ref(false);
+	const loading = ref(false);
 
 	const inputData = ref({ name: "", email: "", password: "" });
 	const errorsData = ref({ name: "", email: "", password: "" });
@@ -98,13 +109,40 @@
 		return Object.values(errorsData.value).some(val => val !== "");
 	});
 
-	function onSubmit() {
+	const client = inject<SupabaseClient>("supabaseClient");
+	const store = useStore();
+	const toast = useToast();
+
+	async function onSubmit() {
 		const { email, name, password } = inputData.value;
 		errorsData.value.name = validateName(name);
 		errorsData.value.email = validatePassword(email);
 		errorsData.value.password = validatePassword(password);
-		if (!hasError.value) {
-			console.log("form submited");
+		if (!hasError.value && !loading.value) {
+			loading.value = true;
+			const { error, user } = await client.auth.signUp(
+				{ email, password },
+				{
+					data: {
+						name,
+					},
+				}
+			);
+
+			loading.value = false;
+			if (error === null && user) {
+				toast.addToast({
+					message: "account successfully created",
+					type: "success",
+				});
+				store.setUser({ email, name });
+			} else {
+				toast.addToast({
+					message: "Some thing went wrong.",
+					type: "error",
+				});
+				console.log(error);
+			}
 		}
 	}
 
