@@ -2,7 +2,21 @@ import { defineNuxtConfig } from "nuxt";
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
-	modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase"],
+	modules: [
+		"@nuxtjs/tailwindcss",
+		"@nuxtjs/supabase",
+		[
+			"@pinia/nuxt",
+			{
+				autoImports: [
+					// automatically imports `defineStore`
+					"defineStore", // import { defineStore } from 'pinia'
+					// automatically imports `defineStore` as `definePiniaStore`
+					["defineStore", "definePiniaStore"], // import { defineStore as definePiniaStore } from 'pinia'
+				],
+			},
+		],
+	],
 	runtimeConfig: {
 		// The private keys which are only available within server-side
 		supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
