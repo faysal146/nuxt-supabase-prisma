@@ -1,4 +1,4 @@
-import { createGlobalState, useLocalStorage } from "@vueuse/core";
+import { createGlobalState, useLocalStorage, usePreferredDark } from "@vueuse/core";
 import { useState } from "#app";
 
 type ThemeName = "night" | "light" | "aqua";
@@ -8,11 +8,16 @@ interface ITheme {
 }
 
 const initVal: ITheme = {
-	current: "night",
-	themes: ["night", "light", "aqua"],
+	current: "light",
+	themes: ["light", "aqua", "night"],
 };
 
 export const useTheme = createGlobalState(() => {
+	const isDark = usePreferredDark();
+	if (isDark.value) {
+		initVal.current = "night";
+	}
+
 	const theme = useState<ITheme>("theme", () => useLocalStorage("theme", initVal, { deep: true }));
 
 	function toggleTheme(name?: ThemeName) {
