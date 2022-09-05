@@ -2,7 +2,7 @@
 	<NuxtPage />
 	<Teleport to="body">
 		<template v-if="toast.toastList.value.length > 0">
-			<div class="toast toast-top toast-end">
+			<div class="toast toast-top toast-end z-10">
 				<Toast
 					v-for="tst in toast.toastList.value"
 					:message="tst.message"
