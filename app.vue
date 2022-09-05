@@ -1,9 +1,28 @@
 <template>
 	<NuxtPage />
+	<Teleport to="body">
+		<template v-if="toast.toastList.value.length > 0">
+			<div class="toast toast-top toast-end">
+				<Toast
+					v-for="tst in toast.toastList.value"
+					:message="tst.message"
+					:type="tst.type"
+					:timeout="tst.timeout"
+					:key="tst.key"
+					:toastKey="tst.key"
+					@close-toast="toast.removeToast"
+				/>
+				<!-- @close-toast="toast.hideToast()" -->
+			</div>
+		</template>
+	</Teleport>
 </template>
 
 <script setup lang="ts">
-	import { useHead } from "nuxt/app";
+	import Toast from "~/components/Alert/Toast.vue";
+	import { useToast } from "~/composables/useToast";
+
+	const toast = useToast();
 
 	useTheme();
 
