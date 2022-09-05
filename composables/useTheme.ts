@@ -1,21 +1,24 @@
+import { createGlobalState, useLocalStorage } from "@vueuse/core";
 import { useState } from "#app";
 
 type ThemeName = "night" | "light" | "aqua";
+interface ITheme {
+	current: ThemeName;
+	themes: string[];
+}
 
-export const useTheme = () => {
-	const theme = useState<{
-		current: ThemeName;
-		themes: string[];
-	}>("theme", () => ({
-		current: "night",
-		themes: ["night", "light", "aqua"],
-	}));
+const initVal: ITheme = {
+	current: "night",
+	themes: ["night", "light", "aqua"],
+};
+
+export const useTheme = createGlobalState(() => {
+	const theme = useState<ITheme>("theme", () => useLocalStorage("theme", initVal, { deep: true }));
 
 	function toggleTheme(name?: ThemeName) {
 		if (typeof name === "undefined") {
 			const themeV = theme.value;
 			let currentThemeIndex = themeV.themes.findIndex(val => val === themeV.current);
-			console.log(currentThemeIndex);
 			if (currentThemeIndex !== -1) {
 				if (currentThemeIndex + 1 > themeV.themes.length - 1) {
 					currentThemeIndex = 0;
@@ -38,4 +41,4 @@ export const useTheme = () => {
 	});
 
 	return { theme: readonly(theme), toggleTheme };
-};
+});
