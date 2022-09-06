@@ -11,3 +11,11 @@ export function useSupabaseClient(): SupabaseClient {
 	}
 	return supabase;
 }
+
+export function useSupabaseUser() {
+	if (supabase) {
+		return supabase.auth.user();
+	} else {
+		return null;
+	}
+}
