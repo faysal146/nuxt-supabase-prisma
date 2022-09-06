@@ -40,7 +40,7 @@
 					</label>
 					<input
 						v-model="inputData.password"
-						:type="showPass ? 'text' : 'password'"
+						:type="showPassword ? 'text' : 'password'"
 						placeholder="********"
 						class="input input-bordered w-full block"
 					/>
@@ -50,11 +50,11 @@
 
 					<button
 						type="button"
-						@click="showPass = !showPass"
+						@click="showPassword = !showPassword"
 						class="absolute right-[10px] top-[45px]"
 					>
 						<svg
-							v-if="!showPass"
+							v-if="!showPassword"
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="-2 -6 24 24"
 							width="24"
@@ -95,9 +95,9 @@
 
 <script setup lang="ts">
 	import { validateEmail, validateName, validatePassword } from "~/helpers/validate";
-	import { useStore } from "~~/store/user.store";
+	import { useAuthStore } from "~~/store/user.store";
 
-	const showPass = ref(false);
+	const showPassword = ref(false);
 	const loading = ref(false);
 
 	const inputData = ref({ name: "", email: "", password: "" });
@@ -108,7 +108,7 @@
 	});
 
 	const supabaseClient = useSupabaseClient();
-	const store = useStore();
+	const authUser = useAuthStore();
 	const toast = useToast();
 	const router = useRouter();
 
@@ -136,7 +136,7 @@
 						type: "success",
 						timeout: 2000,
 					});
-					store.setUser({ email, name });
+					authUser.setUser(user);
 					router.replace("/profile");
 				} else {
 					throw error;
