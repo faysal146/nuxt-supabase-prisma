@@ -96,7 +96,6 @@
 <script setup lang="ts">
 	import { validateEmail, validateName, validatePassword } from "~/helpers/validate";
 	import { useStore } from "~~/store/user.store";
-	import { useToast } from "~/composables/useToast";
 
 	const showPass = ref(false);
 	const loading = ref(false);
