@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+	import { useAuthStore } from "./store/user.store";
+	import "~/assets/css/theme.css";
 	useTheme();
 	useHead({
 		title: "Nuxt App",
@@ -29,4 +31,9 @@
 	});
 	const toast = useToast();
 	const supabase = useSupabaseClient();
+	const authStore = useAuthStore();
+	const user = supabase.auth.user();
+	if (user) {
+		authStore.setUser(user);
+	}
 </script>
