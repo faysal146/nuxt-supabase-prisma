@@ -21,12 +21,8 @@
 <script setup lang="ts">
 	import Toast from "~/components/Alert/Toast.vue";
 	import { useToast } from "~/composables/useToast";
-	import { createClient } from "@supabase/supabase-js";
-
-	const toast = useToast();
 
 	useTheme();
-
 	useHead({
 		title: "Nuxt App",
 		// titleTemplate: (title) => `My App - ${title}`,
@@ -43,8 +39,6 @@
 			},
 		],
 	});
-
-	const { supabase } = useRuntimeConfig().public;
-	const client = createClient(supabase.url, supabase.key);
-	provide("supabaseClient", client);
+	const toast = useToast();
+	const supabase = useSupabaseClient();
 </script>
