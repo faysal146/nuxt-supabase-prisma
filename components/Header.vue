@@ -7,15 +7,74 @@
 				</NuxtLink>
 			</div>
 			<div class="flex-none">
-				<ul class="menu menu-horizontal p-0 font-bold base-content">
+				<ul class="menu menu-horizontal p-0 font-bold base-content items-center flex space-x-3">
+					<template v-if="user.hasUser">
+						<span>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="-3 -2 24 24"
+								width="24"
+								fill="currentColor"
+							>
+								<path
+									d="M18 17H0a8.978 8.978 0 0 1 3-6.708V6a6 6 0 1 1 12 0v4.292A8.978 8.978 0 0 1 18 17zM6.17 18h5.66a3.001 3.001 0 0 1-5.66 0z"
+								></path>
+							</svg>
+						</span>
+						<button
+							class="dropdown dropdown-end rounded-md py-1 px-2 min-w-[100px] flex justify-center bg-primary text-primary-content"
+						>
+							<div class="flex items-center space-x-2">
+								<p class="inline-block font-bold capitalize">
+									{{ user.currentUser.user_metadata.name }}
+								</p>
+								<div class="flex space-x-1 items-center">
+									<div class="avatar" tabindex="0">
+										<div class="w-10 mask mask-hexagon">
+											<img src="https://placeimg.com/192/192/people" />
+										</div>
+									</div>
+									<span>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="18"
+											height="18"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											class="feather feather-chevron-down"
+										>
+											<polyline points="6 9 12 15 18 9" />
+										</svg>
+									</span>
+								</div>
+							</div>
+							<ul
+								tabindex="0"
+								class="menu dropdown-content p-2 shadow w-52 mt-12 bg-primary text-primary-content rounded-md"
+							>
+								<li class="block"><NuxtLink to="/profile">Profile</NuxtLink></li>
+								<li class="block">
+									<NuxtLink to="/change-password">Change Password</NuxtLink>
+								</li>
+								<li class="block"><button class="w-full">Logout</button></li>
+							</ul>
+						</button>
+					</template>
+					<template v-else>
+						<li>
+							<NuxtLink to="/login">Login</NuxtLink>
+						</li>
+						<li>
+							<NuxtLink to="/register">Register</NuxtLink>
+						</li>
+					</template>
+					<!-- dark:bg-neutral dark:hover:bg-neutral-focus -->
 					<li>
-						<NuxtLink to="/login">Login</NuxtLink>
-					</li>
-					<li>
-						<NuxtLink to="/register">Register</NuxtLink>
-					</li>
-					<li>
-						<button @click="toggleTheme()">
+						<button @click="toggleTheme()" class="theme-toggle-btn">
 							<svg
 								class="swap-off fill-current w-5 h-5"
 								xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +104,9 @@
 	</header>
 </template>
 
-<script setup>
-	import { useTheme } from "~/composables/useTheme";
+<script setup lang="ts">
+	import { useAuthStore } from "@/store/user.store";
+
 	const { toggleTheme, theme } = useTheme();
+	const user = useAuthStore();
 </script>
