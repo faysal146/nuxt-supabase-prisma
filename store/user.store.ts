@@ -1,12 +1,9 @@
 import { defineStore } from "pinia";
+import { User } from "@supabase/supabase-js";
 
-interface IUser {
-	email: string;
-	name: string;
-}
-type UserStore = IUser | null;
+type UserStore = User | null;
 
-export const useStore = defineStore("store", {
+export const useAuthStore = defineStore("authStore", {
 	state: () => ({
 		currentUser: null as UserStore,
 	}),
@@ -14,7 +11,7 @@ export const useStore = defineStore("store", {
 		hasUser: state => !!state.currentUser,
 	},
 	actions: {
-		setUser(userData: IUser) {
+		setUser(userData: User) {
 			this.currentUser = userData;
 		},
 		removeUser() {
