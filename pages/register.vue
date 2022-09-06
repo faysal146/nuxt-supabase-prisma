@@ -94,7 +94,6 @@
 </template>
 
 <script setup lang="ts">
-	import { SupabaseClient } from "@supabase/supabase-js";
 	import { validateEmail, validateName, validatePassword } from "~/helpers/validate";
 	import { useStore } from "~~/store/user.store";
 	import { useToast } from "~/composables/useToast";
@@ -109,9 +108,10 @@
 		return Object.values(errorsData.value).some(val => val !== "");
 	});
 
-	const client = inject<SupabaseClient>("supabaseClient");
+	const supabaseClient = useSupabaseClient();
 	const store = useStore();
 	const toast = useToast();
+	const router = useRouter();
 
 	async function onSubmit() {
 		const { email, name, password } = inputData.value;
@@ -120,28 +120,35 @@
 		errorsData.value.password = validatePassword(password);
 		if (!hasError.value && !loading.value) {
 			loading.value = true;
-			const { error, user } = await client.auth.signUp(
-				{ email, password },
-				{
-					data: {
-						name,
-					},
-				}
-			);
+			try {
+				const { error, user } = await supabaseClient.auth.signUp(
+					{ email, password },
+					{
+						data: {
+							name,
+						},
+					}
+				);
+				if (error === null && user) {
+					loading.value = false;
 
-			loading.value = false;
-			if (error === null && user) {
+					toast.addToast({
+						message: "account successfully created",
+						type: "success",
+						timeout: 2000,
+					});
+					store.setUser({ email, name });
+					router.replace("/profile");
+				} else {
+					throw error;
+				}
+			} catch (error) {
+				loading.value = false;
 				toast.addToast({
-					message: "account successfully created",
-					type: "success",
-				});
-				store.setUser({ email, name });
-			} else {
-				toast.addToast({
-					message: "Some thing went wrong.",
+					message: error.message,
 					type: "error",
+					timeout: 2000,
 				});
-				console.log(error);
 			}
 		}
 	}

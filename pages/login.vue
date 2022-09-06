@@ -67,7 +67,13 @@
 						Forget Password
 					</NuxtLink>
 				</p>
-				<button type="submit" class="btn btn-primary btn-block">Login</button>
+				<button
+					type="submit"
+					:disabled="loading"
+					:class="`btn btn-primary btn-block ${loading && 'loading'}`"
+				>
+					Login
+				</button>
 				<p>
 					Don't have an account ?
 					<NuxtLink to="/register" class="underline text-info">Create Account</NuxtLink>
@@ -79,8 +85,11 @@
 
 <script setup lang="ts">
 	import { validateEmail, validatePassword } from "~/helpers/validate";
+	import { useStore } from "~~/store/user.store";
+	import { useToast } from "~/composables/useToast";
 
 	const showPass = useState("showpass", () => false);
+	const loading = ref(false);
 
 	const inputData = ref({ email: "", password: "" });
 	const errorsData = ref({ email: "", password: "" });
@@ -89,12 +98,46 @@
 		return Object.values(errorsData.value).some(val => val !== "");
 	});
 
-	function onSubmit() {
+	const supabaseClient = useSupabaseClient();
+	const store = useStore();
+	const toast = useToast();
+	const router = useRouter();
+
+	async function onSubmit() {
 		const { email, password } = inputData.value;
 		errorsData.value.email = validatePassword(email);
 		errorsData.value.password = validatePassword(password);
-		if (!hasError.value) {
-			console.log("form submited");
+		if (!hasError.value && !loading.value) {
+			loading.value = true;
+			try {
+				const { user, error } = await supabaseClient.auth.signIn({
+					email,
+					password,
+				});
+				if (error === null && user) {
+					loading.value = false;
+
+					toast.addToast({
+						message: "successfully logged in",
+						type: "success",
+						timeout: 2000,
+					});
+					store.setUser({
+						email: user.email,
+						name: user.user_metadata.name,
+					});
+					router.replace("/profile");
+				} else {
+					throw error;
+				}
+			} catch (error) {
+				loading.value = false;
+				toast.addToast({
+					message: error.message,
+					type: "error",
+					timeout: 2000,
+				});
+			}
 		}
 	}
 
