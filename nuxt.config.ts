@@ -17,6 +17,20 @@ export default defineNuxtConfig({
 			},
 		],
 	],
+	buildModules: ["@nuxtjs/google-fonts"],
+	googleFonts: {
+		families: {
+			"Source Sans Pro": {
+				wght: [300, 400, 600],
+			},
+		},
+		download: true,
+		inject: true,
+		overwriting: false,
+		outputDir: "./assets",
+		stylePath: "css/fonts.css",
+		fontsDir: "fonts",
+	},
 	runtimeConfig: {
 		// The private keys which are only available within server-side
 		supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
